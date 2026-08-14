@@ -1,0 +1,789 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ClarifAI — Patient Portal Demo</title>
+<style>
+:root{
+  --teal:#245F75;
+  --teal-dark:#183B4A;
+  --cyan:#77B0C5;
+  --cyan-soft:#ADD6DB;
+  --mint:#91C4B7;
+  --bg:#F7FBFC;
+  --surface:#FFFFFF;
+  --ink:#22343B;
+  --muted:#65767D;
+  --line:#DCE9ED;
+  --soft:#EFF7F9;
+  --success-bg:#EEF8F4;
+  --warning-bg:#FFF9EA;
+  --danger-bg:#FFF1F1;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  background:var(--bg);
+  color:var(--ink);
+}
+button,input,textarea{font:inherit}
+.topbar{
+  background:var(--surface);
+  border-bottom:1px solid var(--line);
+  padding:14px 24px;
+  position:sticky;
+  top:0;
+  z-index:10;
+}
+.nav{
+  max-width:1180px;
+  margin:auto;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:20px;
+}
+.brand{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  color:var(--teal);
+  font-weight:850;
+  font-size:27px;
+  letter-spacing:-.5px;
+}
+.logo{
+  width:40px;height:40px;border-radius:50%;
+  border:3px solid var(--teal);
+  background:linear-gradient(135deg,var(--cyan-soft),#fff 58%);
+  position:relative;
+}
+.logo:after{
+  content:"+";
+  position:absolute;
+  right:-5px;bottom:-5px;
+  width:23px;height:23px;border-radius:50%;
+  display:grid;place-items:center;
+  background:var(--mint);
+  border:2px solid #fff;
+  color:var(--teal-dark);
+  font-weight:900;
+}
+.brand small{
+  display:block;
+  font-size:11px;
+  font-weight:550;
+  color:#8DA0A7;
+  letter-spacing:0;
+}
+.demo-pill{
+  background:var(--soft);
+  border:1px solid var(--line);
+  color:var(--teal);
+  border-radius:999px;
+  padding:8px 12px;
+  font-size:12px;
+  font-weight:800;
+}
+.shell{
+  max-width:1180px;
+  margin:0 auto;
+  padding:24px;
+  display:grid;
+  grid-template-columns:280px minmax(0,1fr);
+  gap:22px;
+}
+.sidebar{
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:18px;
+  box-shadow:0 8px 26px rgba(36,95,117,.06);
+  height:max-content;
+  position:sticky;
+  top:88px;
+}
+.patient{
+  padding:2px 4px 17px;
+  border-bottom:1px solid var(--line);
+  margin-bottom:14px;
+}
+.patient strong{display:block;color:var(--teal-dark);font-size:16px}
+.patient span{font-size:12px;color:var(--muted)}
+.section-title{
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:.11em;
+  color:#85979D;
+  font-weight:850;
+  margin:16px 6px 8px;
+}
+.navbtn{
+  width:100%;
+  border:0;
+  background:transparent;
+  color:var(--ink);
+  display:flex;
+  align-items:center;
+  gap:10px;
+  border-radius:11px;
+  padding:11px 12px;
+  text-align:left;
+  cursor:pointer;
+  font-weight:750;
+  margin:3px 0;
+}
+.navbtn:hover{background:#F5FAFB}
+.navbtn.active{
+  background:#EAF5F7;
+  color:var(--teal);
+}
+.navicon{
+  width:30px;height:30px;border-radius:9px;
+  background:#EFF7F9;
+  display:grid;place-items:center;
+  flex:0 0 auto;
+  font-size:16px;
+}
+.count{
+  margin-left:auto;
+  min-width:24px;
+  text-align:center;
+  font-size:11px;
+  border-radius:999px;
+  background:#fff;
+  border:1px solid var(--line);
+  padding:3px 6px;
+  color:var(--muted);
+}
+.content{min-width:0}
+.hero{
+  margin:3px 0 20px;
+}
+.breadcrumb{
+  color:var(--muted);
+  font-size:13px;
+  margin-bottom:7px;
+}
+h1{
+  margin:0;
+  color:var(--teal-dark);
+  font-size:34px;
+  letter-spacing:-.7px;
+}
+.hero p{
+  margin:7px 0 0;
+  color:var(--muted);
+  font-size:15px;
+}
+.card{
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:18px;
+  box-shadow:0 9px 28px rgba(36,95,117,.06);
+  overflow:hidden;
+  margin-bottom:18px;
+}
+.card-head{
+  padding:18px 20px 14px;
+  border-bottom:1px solid var(--line);
+  display:flex;
+  align-items:flex-start;
+  justify-content:space-between;
+  gap:14px;
+}
+.eyebrow{
+  font-size:11px;
+  font-weight:850;
+  text-transform:uppercase;
+  letter-spacing:.11em;
+  color:var(--teal);
+}
+.card-title{
+  color:var(--teal-dark);
+  font-weight:850;
+  font-size:18px;
+  margin-top:4px;
+}
+.meta{
+  color:var(--muted);
+  font-size:12px;
+  margin-top:4px;
+}
+.badge{
+  font-size:11px;
+  color:var(--teal);
+  font-weight:850;
+  border-radius:999px;
+  border:1px solid var(--line);
+  background:var(--soft);
+  padding:7px 10px;
+  white-space:nowrap;
+}
+.list{
+  padding:8px 12px 12px;
+}
+.record{
+  width:100%;
+  background:#fff;
+  border:1px solid transparent;
+  border-radius:13px;
+  padding:14px 13px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  cursor:pointer;
+  text-align:left;
+  margin:4px 0;
+}
+.record:hover{background:#F7FBFC;border-color:var(--line)}
+.record-icon{
+  width:42px;height:42px;border-radius:12px;
+  display:grid;place-items:center;
+  background:#EEF7F8;
+  color:var(--teal);
+  font-size:19px;
+  flex:0 0 auto;
+}
+.record-main{min-width:0}
+.record-main strong{display:block;color:var(--teal-dark);font-size:14px}
+.record-main span{display:block;color:var(--muted);font-size:12px;margin-top:3px}
+.arrow{margin-left:auto;color:#9AA9AE;font-size:18px}
+.detail{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:18px;
+}
+.panel{
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:16px;
+  overflow:hidden;
+}
+.panel-head{
+  padding:15px 17px 12px;
+  border-bottom:1px solid var(--line);
+}
+.panel-head strong{color:var(--teal-dark);font-size:14px}
+.panel-body{padding:17px}
+.note{
+  font-family:Georgia,"Times New Roman",serif;
+  font-size:17px;
+  line-height:1.63;
+  color:#33484F;
+  white-space:pre-wrap;
+}
+.plain{
+  font-size:17px;
+  line-height:1.63;
+  color:#2E4147;
+}
+.actions{
+  display:flex;
+  gap:9px;
+  flex-wrap:wrap;
+  margin-top:15px;
+}
+.primary{
+  border:0;
+  border-radius:11px;
+  background:var(--teal);
+  color:#fff;
+  font-weight:850;
+  padding:12px 15px;
+  cursor:pointer;
+  box-shadow:0 6px 15px rgba(36,95,117,.18);
+}
+.secondary{
+  border:1px solid var(--line);
+  border-radius:11px;
+  background:#fff;
+  color:var(--teal);
+  font-weight:800;
+  padding:11px 14px;
+  cursor:pointer;
+}
+.term-box{
+  margin-top:14px;
+  background:#F4FAFB;
+  border:1px solid #DCECEF;
+  border-radius:12px;
+  padding:12px 13px;
+}
+.term-title{
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  color:var(--teal);
+  font-weight:850;
+  margin-bottom:7px;
+}
+.term{font-size:13px;line-height:1.45;margin:5px 0}
+.term b{color:var(--teal-dark)}
+.folder-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:14px;
+  padding:16px;
+}
+.folder{
+  border:1px solid var(--line);
+  border-radius:15px;
+  padding:16px;
+  background:linear-gradient(180deg,#fff,#FBFDFE);
+  cursor:pointer;
+  transition:.15s ease;
+}
+.folder:hover{transform:translateY(-1px);box-shadow:0 7px 18px rgba(36,95,117,.08)}
+.folder-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.folder-icon{
+  width:44px;height:38px;border-radius:10px;
+  background:#EAF5F7;
+  color:var(--teal);
+  display:grid;place-items:center;
+  font-size:20px;
+}
+.folder strong{display:block;margin-top:12px;color:var(--teal-dark);font-size:15px}
+.folder span{display:block;color:var(--muted);font-size:12px;margin-top:4px;line-height:1.45}
+.med-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:14px;
+  padding:16px;
+}
+.med{
+  border:1px solid var(--line);
+  border-radius:15px;
+  overflow:hidden;
+  background:#fff;
+}
+.med-top{
+  padding:15px 16px 12px;
+  background:linear-gradient(90deg,#F3FAFB,#fff);
+  border-bottom:1px solid var(--line);
+}
+.med-top strong{display:block;color:var(--teal-dark);font-size:16px}
+.med-top span{font-size:12px;color:var(--muted)}
+.med-body{padding:15px 16px}
+.med-row{
+  display:grid;
+  grid-template-columns:125px 1fr;
+  gap:10px;
+  padding:8px 0;
+  border-bottom:1px dashed #E6EFF1;
+  font-size:13px;
+}
+.med-row:last-child{border-bottom:0}
+.med-row .label{color:var(--muted)}
+.med-row .value{color:var(--ink);font-weight:700}
+.med-explain{
+  margin-top:12px;
+  background:#F4FAFB;
+  border-radius:11px;
+  padding:11px 12px;
+  font-size:13px;
+  line-height:1.5;
+  color:#36525A;
+}
+.notice{
+  margin-top:20px;
+  border-left:4px solid var(--mint);
+  background:var(--success-bg);
+  border-radius:10px;
+  padding:13px 15px;
+  color:#36524B;
+  font-size:12px;
+  line-height:1.5;
+}
+.demo-warning{
+  margin-bottom:18px;
+  background:var(--warning-bg);
+  border:1px solid #F1E4B8;
+  color:#715A1E;
+  padding:12px 14px;
+  border-radius:12px;
+  font-size:12px;
+  line-height:1.45;
+}
+.hidden{display:none!important}
+@media(max-width:900px){
+  .shell{grid-template-columns:1fr}
+  .sidebar{position:static}
+  .detail,.folder-grid,.med-grid{grid-template-columns:1fr}
+}
+@media(max-width:580px){
+  .shell{padding:16px}
+  .demo-pill{display:none}
+  .brand{font-size:23px}
+  h1{font-size:29px}
+}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="nav">
+    <div class="brand">
+      <span class="logo"></span>
+      <span>ClarifAI<small>Making medical notes clearer for patients.</small></span>
+    </div>
+    <div class="demo-pill">Patient portal · Group 6 POC</div>
+  </div>
+</header>
+
+<div class="shell">
+  <aside class="sidebar">
+    <div class="patient">
+      <strong>Alex Morgan</strong>
+      <span>Demo patient · Not real health data</span>
+    </div>
+
+    <div class="section-title">My health records</div>
+    <button class="navbtn active" id="nav-overview" onclick="showPage('overview')">
+      <span class="navicon">⌂</span>Overview
+    </button>
+    <button class="navbtn" id="nav-diagnoses" onclick="showPage('diagnoses')">
+      <span class="navicon">📁</span>Diagnoses
+      <span class="count">3</span>
+    </button>
+    <button class="navbtn" id="nav-notes" onclick="showPage('notes')">
+      <span class="navicon">📝</span>Clinical notes
+      <span class="count">2</span>
+    </button>
+    <button class="navbtn" id="nav-medications" onclick="showPage('medications')">
+      <span class="navicon">💊</span>Medications
+      <span class="count">3</span>
+    </button>
+  </aside>
+
+  <main class="content">
+    <div class="demo-warning">
+      <strong>Demo only:</strong> all names, diagnoses, notes and prescriptions shown below are fictional examples. Medication instructions are displayed as stored prescription information, not generated medical advice.
+    </div>
+
+    <section id="page-overview">
+      <div class="hero">
+        <div class="breadcrumb">Home › My health</div>
+        <h1>My health records</h1>
+        <p>Open a diagnosis, clinical note or prescription and ask ClarifAI to explain it in plain language.</p>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <div class="eyebrow">Folders</div>
+            <div class="card-title">Your records</div>
+          </div>
+          <div class="badge">Demo portal</div>
+        </div>
+        <div class="folder-grid">
+          <div class="folder" onclick="showPage('diagnoses')">
+            <div class="folder-top">
+              <div class="folder-icon">📁</div>
+              <span class="badge">3</span>
+            </div>
+            <strong>Diagnoses</strong>
+            <span>Browse diagnoses and open the related clinical note.</span>
+          </div>
+          <div class="folder" onclick="showPage('notes')">
+            <div class="folder-top">
+              <div class="folder-icon">📝</div>
+              <span class="badge">2</span>
+            </div>
+            <strong>Clinical notes</strong>
+            <span>Read the original note and generate a patient-friendly version.</span>
+          </div>
+          <div class="folder" onclick="showPage('medications')">
+            <div class="folder-top">
+              <div class="folder-icon">💊</div>
+              <span class="badge">3</span>
+            </div>
+            <strong>Medications</strong>
+            <span>See prescription strength, frequency, timing and plain-language instructions.</span>
+          </div>
+          <div class="folder" onclick="openRecord('pathology')">
+            <div class="folder-top">
+              <div class="folder-icon">✦</div>
+              <span class="badge">Example</span>
+            </div>
+            <strong>Try ClarifAI</strong>
+            <span>Open the schwannoma pathology example from the group presentation.</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="notice">
+        <strong>Safety concept:</strong> ClarifAI never overwrites the original record. The patient always sees the original text beside the simplified version.
+      </div>
+    </section>
+
+    <section id="page-diagnoses" class="hidden">
+      <div class="hero">
+        <div class="breadcrumb">Home › My health › Diagnoses</div>
+        <h1>Diagnoses</h1>
+        <p>Select a diagnosis to view the linked note and simplify its medical language.</p>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <div class="eyebrow">Diagnosis folder</div>
+            <div class="card-title">Recorded diagnoses</div>
+          </div>
+          <div class="badge">3 records</div>
+        </div>
+        <div class="list">
+          <button class="record" onclick="openRecord('pathology')">
+            <span class="record-icon">🧬</span>
+            <span class="record-main">
+              <strong>Schwannoma · left masseteric region</strong>
+              <span>Pathology · benign peripheral nerve sheath tumor</span>
+            </span>
+            <span class="arrow">›</span>
+          </button>
+          <button class="record" onclick="openRecord('headache')">
+            <span class="record-icon">🧠</span>
+            <span class="record-main">
+              <strong>Tension-type headache / possible neuropathic pain</strong>
+              <span>Outpatient assessment</span>
+            </span>
+            <span class="arrow">›</span>
+          </button>
+          <button class="record" onclick="openRecord('hypertension')">
+            <span class="record-icon">♥</span>
+            <span class="record-main">
+              <strong>Hypertension</strong>
+              <span>Example chronic-condition note</span>
+            </span>
+            <span class="arrow">›</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section id="page-notes" class="hidden">
+      <div class="hero">
+        <div class="breadcrumb">Home › My health › Clinical notes</div>
+        <h1>Clinical notes</h1>
+        <p>Open a note to read the original version and simplify it.</p>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <div class="eyebrow">Notes folder</div>
+            <div class="card-title">Recent clinical notes</div>
+          </div>
+          <div class="badge">2 notes</div>
+        </div>
+        <div class="list">
+          <button class="record" onclick="openRecord('pathology')">
+            <span class="record-icon">🔬</span>
+            <span class="record-main">
+              <strong>Pathology report</strong>
+              <span>Schwannoma example · pathology</span>
+            </span>
+            <span class="arrow">›</span>
+          </button>
+          <button class="record" onclick="openRecord('headache')">
+            <span class="record-icon">📝</span>
+            <span class="record-main">
+              <strong>Neurology / headache assessment</strong>
+              <span>Tension-type headache example</span>
+            </span>
+            <span class="arrow">›</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section id="page-medications" class="hidden">
+      <div class="hero">
+        <div class="breadcrumb">Home › My health › Medications</div>
+        <h1>My medications</h1>
+        <p>See the prescription exactly as recorded, plus a plain-language explanation of the dosing instructions.</p>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <div class="eyebrow">Medication folder</div>
+            <div class="card-title">Current example prescriptions</div>
+          </div>
+          <div class="badge">3 prescriptions</div>
+        </div>
+
+        <div class="med-grid">
+          <article class="med">
+            <div class="med-top">
+              <strong>Metformin 500 mg</strong>
+              <span>Example prescription</span>
+            </div>
+            <div class="med-body">
+              <div class="med-row"><div class="label">Dose</div><div class="value">1 tablet</div></div>
+              <div class="med-row"><div class="label">How often</div><div class="value">Twice daily</div></div>
+              <div class="med-row"><div class="label">When</div><div class="value">With meals</div></div>
+              <div class="med-row"><div class="label">Route</div><div class="value">By mouth</div></div>
+              <div class="med-explain"><strong>Plain language:</strong> Take one tablet by mouth two times each day, with food.</div>
+            </div>
+          </article>
+
+          <article class="med">
+            <div class="med-top">
+              <strong>Amoxicillin 500 mg</strong>
+              <span>Example prescription</span>
+            </div>
+            <div class="med-body">
+              <div class="med-row"><div class="label">Dose</div><div class="value">1 capsule</div></div>
+              <div class="med-row"><div class="label">How often</div><div class="value">Three times daily</div></div>
+              <div class="med-row"><div class="label">Duration</div><div class="value">7 days</div></div>
+              <div class="med-row"><div class="label">Route</div><div class="value">By mouth</div></div>
+              <div class="med-explain"><strong>Plain language:</strong> Take one capsule by mouth three times each day for seven days.</div>
+            </div>
+          </article>
+
+          <article class="med">
+            <div class="med-top">
+              <strong>Ibuprofen 400 mg</strong>
+              <span>Example prescription</span>
+            </div>
+            <div class="med-body">
+              <div class="med-row"><div class="label">Dose</div><div class="value">1 tablet</div></div>
+              <div class="med-row"><div class="label">How often</div><div class="value">As needed</div></div>
+              <div class="med-row"><div class="label">Maximum</div><div class="value">Up to 3 times daily</div></div>
+              <div class="med-row"><div class="label">Route</div><div class="value">By mouth</div></div>
+              <div class="med-explain"><strong>Plain language:</strong> If needed, take one tablet by mouth. The example prescription allows up to three doses in one day.</div>
+            </div>
+          </article>
+        </div>
+      </div>
+
+      <div class="notice">
+        In a real patient portal, ClarifAI should explain the <strong>existing prescription</strong> without changing the dose, frequency, timing, duration, or route. It should never invent new medication instructions.
+      </div>
+    </section>
+
+    <section id="page-record" class="hidden">
+      <div class="hero">
+        <div class="breadcrumb">Home › My health › <span id="recordBreadcrumb">Record</span></div>
+        <h1 id="recordTitle">Clinical record</h1>
+        <p id="recordSubtitle">View the original record and create a patient-friendly version.</p>
+      </div>
+
+      <div class="detail">
+        <div class="panel">
+          <div class="panel-head">
+            <strong>Original clinical wording</strong>
+          </div>
+          <div class="panel-body">
+            <div id="recordOriginal" class="note"></div>
+            <div class="actions">
+              <button class="primary" onclick="simplifyCurrent()">✦ Simplify it for me</button>
+              <button class="secondary" onclick="showPage('diagnoses')">Back to diagnoses</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-head">
+            <strong>Patient-friendly explanation</strong>
+          </div>
+          <div class="panel-body">
+            <div id="recordSimplified" class="plain" style="color:#82949A">Click “Simplify it for me” to create a plain-language version.</div>
+            <div id="recordTerms"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="notice">
+        The original wording remains visible beside the simplified version so the patient can compare them directly.
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+const records = {
+  pathology: {
+    breadcrumb:"Diagnoses › Schwannoma",
+    title:"Schwannoma · pathology report",
+    subtitle:"Pathology example from the ClarifAI proof of concept.",
+    original:"Specimen: multiple nodular masses from L masseteric region. Histology: encapsulated benign tumor, spindle cell pattern consistent w/ schwannoma. Conclusion: benign peripheral nerve sheath tumor.",
+    simplified:"The tissue samples from the left cheek/jaw area showed a non-cancerous tumor called a schwannoma. The tumor was well contained and had the typical appearance of a schwannoma.",
+    terms:[
+      ["Benign","non-cancerous"],
+      ["L masseteric region","left cheek/jaw area"],
+      ["Schwannoma","a tumor that develops from cells that surround a nerve"]
+    ]
+  },
+  headache: {
+    breadcrumb:"Diagnoses › Headache assessment",
+    title:"Headache assessment",
+    subtitle:"Outpatient assessment example.",
+    original:"Assessment: likely tension-type HA vs early neuropathic pain. Plan: trial NSAIDs, monitor progression.",
+    simplified:"The headaches were thought to be most consistent with tension headaches, although early irritation or pain involving a nerve was also considered. She was advised to try over-the-counter anti-inflammatory pain medication and monitor whether the headaches changed or worsened.",
+    terms:[
+      ["HA","headache"],
+      ["Neuropathic pain","pain related to irritation or injury of a nerve"],
+      ["NSAIDs","anti-inflammatory pain medicines"]
+    ]
+  },
+  hypertension: {
+    breadcrumb:"Diagnoses › Hypertension",
+    title:"Hypertension follow-up",
+    subtitle:"Additional fictional demo record.",
+    original:"Assessment: essential HTN, currently stable. Continue current antihypertensive regimen. Home BP monitoring advised; review in 3 mo.",
+    simplified:"The clinician recorded high blood pressure that is currently stable. The plan is to continue the current blood-pressure medication, keep checking blood pressure at home, and have another review in three months.",
+    terms:[
+      ["HTN","high blood pressure"],
+      ["Antihypertensive","a medicine used to lower blood pressure"],
+      ["BP","blood pressure"]
+    ]
+  }
+};
+
+let currentRecord = null;
+
+function setActive(page){
+  ["overview","diagnoses","notes","medications"].forEach(x=>{
+    const el=document.getElementById("nav-"+x);
+    if(el) el.classList.toggle("active",x===page);
+  });
+}
+
+function showPage(page){
+  ["overview","diagnoses","notes","medications","record"].forEach(x=>{
+    document.getElementById("page-"+x).classList.toggle("hidden",x!==page);
+  });
+  setActive(page);
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function openRecord(key){
+  currentRecord = records[key];
+  document.getElementById("recordBreadcrumb").textContent=currentRecord.breadcrumb;
+  document.getElementById("recordTitle").textContent=currentRecord.title;
+  document.getElementById("recordSubtitle").textContent=currentRecord.subtitle;
+  document.getElementById("recordOriginal").textContent=currentRecord.original;
+  document.getElementById("recordSimplified").textContent="Click “Simplify it for me” to create a plain-language version.";
+  document.getElementById("recordSimplified").style.color="#82949A";
+  document.getElementById("recordTerms").innerHTML="";
+  showPage("record");
+}
+
+function simplifyCurrent(){
+  if(!currentRecord) return;
+  const out=document.getElementById("recordSimplified");
+  out.textContent=currentRecord.simplified;
+  out.style.color="#2E4147";
+  let html='<div class="term-box"><div class="term-title">Medical terms made clearer</div>';
+  currentRecord.terms.forEach(([a,b])=>{
+    html+='<div class="term"><b>'+a+'</b> → '+b+'</div>';
+  });
+  html+='</div>';
+  document.getElementById("recordTerms").innerHTML=html;
+}
+</script>
+</body>
+</html>
