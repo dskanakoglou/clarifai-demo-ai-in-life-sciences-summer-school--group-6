@@ -4,6 +4,7 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>ClarifAI — Patient Portal Demo</title>
+<script src="config.js"></script>
 <style>
 :root{
   --teal:#245F75;
@@ -19,7 +20,7 @@
   --soft:#EFF7F9;
   --success-bg:#EEF8F4;
   --warning-bg:#FFF9EA;
-  --danger-bg:#FFF1F1;
+  --error-bg:#FFF1F1;
 }
 *{box-sizing:border-box}
 body{
@@ -28,7 +29,7 @@ body{
   background:var(--bg);
   color:var(--ink);
 }
-button,input,textarea{font:inherit}
+button{font:inherit}
 .topbar{
   background:var(--surface);
   border-bottom:1px solid var(--line);
@@ -136,10 +137,7 @@ button,input,textarea{font:inherit}
   margin:3px 0;
 }
 .navbtn:hover{background:#F5FAFB}
-.navbtn.active{
-  background:#EAF5F7;
-  color:var(--teal);
-}
+.navbtn.active{background:#EAF5F7;color:var(--teal)}
 .navicon{
   width:30px;height:30px;border-radius:9px;
   background:#EFF7F9;
@@ -159,25 +157,10 @@ button,input,textarea{font:inherit}
   color:var(--muted);
 }
 .content{min-width:0}
-.hero{
-  margin:3px 0 20px;
-}
-.breadcrumb{
-  color:var(--muted);
-  font-size:13px;
-  margin-bottom:7px;
-}
-h1{
-  margin:0;
-  color:var(--teal-dark);
-  font-size:34px;
-  letter-spacing:-.7px;
-}
-.hero p{
-  margin:7px 0 0;
-  color:var(--muted);
-  font-size:15px;
-}
+.hero{margin:3px 0 20px}
+.breadcrumb{color:var(--muted);font-size:13px;margin-bottom:7px}
+h1{margin:0;color:var(--teal-dark);font-size:34px;letter-spacing:-.7px}
+.hero p{margin:7px 0 0;color:var(--muted);font-size:15px}
 .card{
   background:#fff;
   border:1px solid var(--line);
@@ -207,11 +190,6 @@ h1{
   font-size:18px;
   margin-top:4px;
 }
-.meta{
-  color:var(--muted);
-  font-size:12px;
-  margin-top:4px;
-}
 .badge{
   font-size:11px;
   color:var(--teal);
@@ -222,9 +200,31 @@ h1{
   padding:7px 10px;
   white-space:nowrap;
 }
-.list{
-  padding:8px 12px 12px;
+.folder-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:14px;
+  padding:16px;
 }
+.folder{
+  border:1px solid var(--line);
+  border-radius:15px;
+  padding:16px;
+  background:linear-gradient(180deg,#fff,#FBFDFE);
+  cursor:pointer;
+}
+.folder:hover{box-shadow:0 7px 18px rgba(36,95,117,.08)}
+.folder-top{display:flex;justify-content:space-between;align-items:flex-start}
+.folder-icon{
+  width:44px;height:38px;border-radius:10px;
+  background:#EAF5F7;
+  color:var(--teal);
+  display:grid;place-items:center;
+  font-size:20px;
+}
+.folder strong{display:block;margin-top:12px;color:var(--teal-dark);font-size:15px}
+.folder span{display:block;color:var(--muted);font-size:12px;margin-top:4px;line-height:1.45}
+.list{padding:8px 12px 12px}
 .record{
   width:100%;
   background:#fff;
@@ -245,27 +245,19 @@ h1{
   background:#EEF7F8;
   color:var(--teal);
   font-size:19px;
-  flex:0 0 auto;
 }
 .record-main{min-width:0}
 .record-main strong{display:block;color:var(--teal-dark);font-size:14px}
 .record-main span{display:block;color:var(--muted);font-size:12px;margin-top:3px}
 .arrow{margin-left:auto;color:#9AA9AE;font-size:18px}
-.detail{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:18px;
-}
+.detail{display:grid;grid-template-columns:1fr 1fr;gap:18px}
 .panel{
   background:#fff;
   border:1px solid var(--line);
   border-radius:16px;
   overflow:hidden;
 }
-.panel-head{
-  padding:15px 17px 12px;
-  border-bottom:1px solid var(--line);
-}
+.panel-head{padding:15px 17px 12px;border-bottom:1px solid var(--line)}
 .panel-head strong{color:var(--teal-dark);font-size:14px}
 .panel-body{padding:17px}
 .note{
@@ -275,149 +267,79 @@ h1{
   color:#33484F;
   white-space:pre-wrap;
 }
-.plain{
-  font-size:17px;
-  line-height:1.63;
-  color:#2E4147;
-}
-.actions{
-  display:flex;
-  gap:9px;
-  flex-wrap:wrap;
-  margin-top:15px;
-}
+.plain{font-size:17px;line-height:1.63;color:#2E4147}
+.actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:15px}
 .primary{
-  border:0;
-  border-radius:11px;
-  background:var(--teal);
-  color:#fff;
-  font-weight:850;
-  padding:12px 15px;
-  cursor:pointer;
+  border:0;border-radius:11px;background:var(--teal);color:#fff;
+  font-weight:850;padding:12px 15px;cursor:pointer;
   box-shadow:0 6px 15px rgba(36,95,117,.18);
 }
+.primary:disabled{opacity:.6;cursor:wait}
 .secondary{
-  border:1px solid var(--line);
-  border-radius:11px;
-  background:#fff;
-  color:var(--teal);
-  font-weight:800;
-  padding:11px 14px;
-  cursor:pointer;
+  border:1px solid var(--line);border-radius:11px;background:#fff;
+  color:var(--teal);font-weight:800;padding:11px 14px;cursor:pointer;
 }
 .term-box{
-  margin-top:14px;
-  background:#F4FAFB;
-  border:1px solid #DCECEF;
-  border-radius:12px;
-  padding:12px 13px;
+  margin-top:14px;background:#F4FAFB;border:1px solid #DCECEF;
+  border-radius:12px;padding:12px 13px;
 }
 .term-title{
-  font-size:11px;
-  text-transform:uppercase;
-  letter-spacing:.08em;
-  color:var(--teal);
-  font-weight:850;
-  margin-bottom:7px;
+  font-size:11px;text-transform:uppercase;letter-spacing:.08em;
+  color:var(--teal);font-weight:850;margin-bottom:7px;
 }
 .term{font-size:13px;line-height:1.45;margin:5px 0}
 .term b{color:var(--teal-dark)}
-.folder-grid{
-  display:grid;
-  grid-template-columns:repeat(2,minmax(0,1fr));
-  gap:14px;
-  padding:16px;
-}
-.folder{
-  border:1px solid var(--line);
-  border-radius:15px;
-  padding:16px;
-  background:linear-gradient(180deg,#fff,#FBFDFE);
-  cursor:pointer;
-  transition:.15s ease;
-}
-.folder:hover{transform:translateY(-1px);box-shadow:0 7px 18px rgba(36,95,117,.08)}
-.folder-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
-.folder-icon{
-  width:44px;height:38px;border-radius:10px;
-  background:#EAF5F7;
-  color:var(--teal);
-  display:grid;place-items:center;
-  font-size:20px;
-}
-.folder strong{display:block;margin-top:12px;color:var(--teal-dark);font-size:15px}
-.folder span{display:block;color:var(--muted);font-size:12px;margin-top:4px;line-height:1.45}
 .med-grid{
-  display:grid;
-  grid-template-columns:repeat(2,minmax(0,1fr));
-  gap:14px;
-  padding:16px;
+  display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:14px;padding:16px;
 }
 .med{
-  border:1px solid var(--line);
-  border-radius:15px;
-  overflow:hidden;
-  background:#fff;
+  border:1px solid var(--line);border-radius:15px;overflow:hidden;background:#fff;
 }
 .med-top{
-  padding:15px 16px 12px;
-  background:linear-gradient(90deg,#F3FAFB,#fff);
+  padding:15px 16px 12px;background:linear-gradient(90deg,#F3FAFB,#fff);
   border-bottom:1px solid var(--line);
 }
 .med-top strong{display:block;color:var(--teal-dark);font-size:16px}
 .med-top span{font-size:12px;color:var(--muted)}
 .med-body{padding:15px 16px}
 .med-row{
-  display:grid;
-  grid-template-columns:125px 1fr;
-  gap:10px;
-  padding:8px 0;
-  border-bottom:1px dashed #E6EFF1;
-  font-size:13px;
+  display:grid;grid-template-columns:125px 1fr;gap:10px;
+  padding:8px 0;border-bottom:1px dashed #E6EFF1;font-size:13px;
 }
 .med-row:last-child{border-bottom:0}
 .med-row .label{color:var(--muted)}
 .med-row .value{color:var(--ink);font-weight:700}
 .med-explain{
-  margin-top:12px;
-  background:#F4FAFB;
-  border-radius:11px;
-  padding:11px 12px;
-  font-size:13px;
-  line-height:1.5;
-  color:#36525A;
+  margin-top:12px;background:#F4FAFB;border-radius:11px;
+  padding:11px 12px;font-size:13px;line-height:1.5;color:#36525A;
+}
+.notice,.demo-warning{
+  padding:12px 14px;border-radius:12px;font-size:12px;line-height:1.45;
 }
 .notice{
-  margin-top:20px;
-  border-left:4px solid var(--mint);
-  background:var(--success-bg);
-  border-radius:10px;
-  padding:13px 15px;
-  color:#36524B;
-  font-size:12px;
-  line-height:1.5;
+  margin-top:20px;border-left:4px solid var(--mint);
+  background:var(--success-bg);color:#36524B;
 }
 .demo-warning{
-  margin-bottom:18px;
-  background:var(--warning-bg);
-  border:1px solid #F1E4B8;
-  color:#715A1E;
-  padding:12px 14px;
-  border-radius:12px;
-  font-size:12px;
-  line-height:1.45;
+  margin-bottom:18px;background:var(--warning-bg);
+  border:1px solid #F1E4B8;color:#715A1E;
 }
+.api-status{
+  margin-top:12px;
+  border-radius:10px;
+  padding:10px 12px;
+  font-size:12px;
+  display:none;
+}
+.api-status.show{display:block}
+.api-status.error{background:var(--error-bg);color:#7D3131}
+.api-status.ok{background:var(--success-bg);color:#36524B}
 .hidden{display:none!important}
 @media(max-width:900px){
   .shell{grid-template-columns:1fr}
   .sidebar{position:static}
   .detail,.folder-grid,.med-grid{grid-template-columns:1fr}
-}
-@media(max-width:580px){
-  .shell{padding:16px}
-  .demo-pill{display:none}
-  .brand{font-size:23px}
-  h1{font-size:29px}
 }
 </style>
 </head>
@@ -440,17 +362,21 @@ h1{
     </div>
 
     <div class="section-title">My health records</div>
+
     <button class="navbtn active" id="nav-overview" onclick="showPage('overview')">
       <span class="navicon">⌂</span>Overview
     </button>
+
     <button class="navbtn" id="nav-diagnoses" onclick="showPage('diagnoses')">
       <span class="navicon">📁</span>Diagnoses
       <span class="count">3</span>
     </button>
+
     <button class="navbtn" id="nav-notes" onclick="showPage('notes')">
       <span class="navicon">📝</span>Clinical notes
       <span class="count">2</span>
     </button>
+
     <button class="navbtn" id="nav-medications" onclick="showPage('medications')">
       <span class="navicon">💊</span>Medications
       <span class="count">3</span>
@@ -459,7 +385,7 @@ h1{
 
   <main class="content">
     <div class="demo-warning">
-      <strong>Demo only:</strong> all names, diagnoses, notes and prescriptions shown below are fictional examples. Medication instructions are displayed as stored prescription information, not generated medical advice.
+      <strong>Demo only:</strong> all names, diagnoses, notes and prescriptions shown below are fictional examples or educational examples from the group proof of concept.
     </div>
 
     <section id="page-overview">
@@ -477,6 +403,7 @@ h1{
           </div>
           <div class="badge">Demo portal</div>
         </div>
+
         <div class="folder-grid">
           <div class="folder" onclick="showPage('diagnoses')">
             <div class="folder-top">
@@ -486,6 +413,7 @@ h1{
             <strong>Diagnoses</strong>
             <span>Browse diagnoses and open the related clinical note.</span>
           </div>
+
           <div class="folder" onclick="showPage('notes')">
             <div class="folder-top">
               <div class="folder-icon">📝</div>
@@ -494,6 +422,7 @@ h1{
             <strong>Clinical notes</strong>
             <span>Read the original note and generate a patient-friendly version.</span>
           </div>
+
           <div class="folder" onclick="showPage('medications')">
             <div class="folder-top">
               <div class="folder-icon">💊</div>
@@ -502,19 +431,20 @@ h1{
             <strong>Medications</strong>
             <span>See prescription strength, frequency, timing and plain-language instructions.</span>
           </div>
+
           <div class="folder" onclick="openRecord('pathology')">
             <div class="folder-top">
               <div class="folder-icon">✦</div>
               <span class="badge">Example</span>
             </div>
             <strong>Try ClarifAI</strong>
-            <span>Open the schwannoma pathology example from the group presentation.</span>
+            <span>Open the schwannoma pathology example.</span>
           </div>
         </div>
       </div>
 
       <div class="notice">
-        <strong>Safety concept:</strong> ClarifAI never overwrites the original record. The patient always sees the original text beside the simplified version.
+        <strong>Safety concept:</strong> the original record is never overwritten. The patient can compare it directly with the simplified version.
       </div>
     </section>
 
@@ -533,6 +463,7 @@ h1{
           </div>
           <div class="badge">3 records</div>
         </div>
+
         <div class="list">
           <button class="record" onclick="openRecord('pathology')">
             <span class="record-icon">🧬</span>
@@ -542,6 +473,7 @@ h1{
             </span>
             <span class="arrow">›</span>
           </button>
+
           <button class="record" onclick="openRecord('headache')">
             <span class="record-icon">🧠</span>
             <span class="record-main">
@@ -550,11 +482,12 @@ h1{
             </span>
             <span class="arrow">›</span>
           </button>
+
           <button class="record" onclick="openRecord('hypertension')">
             <span class="record-icon">♥</span>
             <span class="record-main">
               <strong>Hypertension</strong>
-              <span>Example chronic-condition note</span>
+              <span>Fictional chronic-condition example</span>
             </span>
             <span class="arrow">›</span>
           </button>
@@ -577,15 +510,17 @@ h1{
           </div>
           <div class="badge">2 notes</div>
         </div>
+
         <div class="list">
           <button class="record" onclick="openRecord('pathology')">
             <span class="record-icon">🔬</span>
             <span class="record-main">
               <strong>Pathology report</strong>
-              <span>Schwannoma example · pathology</span>
+              <span>Schwannoma example</span>
             </span>
             <span class="arrow">›</span>
           </button>
+
           <button class="record" onclick="openRecord('headache')">
             <span class="record-icon">📝</span>
             <span class="record-main">
@@ -618,7 +553,7 @@ h1{
           <article class="med">
             <div class="med-top">
               <strong>Metformin 500 mg</strong>
-              <span>Example prescription</span>
+              <span>Fictional example prescription</span>
             </div>
             <div class="med-body">
               <div class="med-row"><div class="label">Dose</div><div class="value">1 tablet</div></div>
@@ -632,7 +567,7 @@ h1{
           <article class="med">
             <div class="med-top">
               <strong>Amoxicillin 500 mg</strong>
-              <span>Example prescription</span>
+              <span>Fictional example prescription</span>
             </div>
             <div class="med-body">
               <div class="med-row"><div class="label">Dose</div><div class="value">1 capsule</div></div>
@@ -646,7 +581,7 @@ h1{
           <article class="med">
             <div class="med-top">
               <strong>Ibuprofen 400 mg</strong>
-              <span>Example prescription</span>
+              <span>Fictional example prescription</span>
             </div>
             <div class="med-body">
               <div class="med-row"><div class="label">Dose</div><div class="value">1 tablet</div></div>
@@ -660,7 +595,7 @@ h1{
       </div>
 
       <div class="notice">
-        In a real patient portal, ClarifAI should explain the <strong>existing prescription</strong> without changing the dose, frequency, timing, duration, or route. It should never invent new medication instructions.
+        A real ClarifAI system should explain the <strong>existing prescription</strong> without changing the dose, frequency, timing, duration, or route.
       </div>
     </section>
 
@@ -673,24 +608,23 @@ h1{
 
       <div class="detail">
         <div class="panel">
-          <div class="panel-head">
-            <strong>Original clinical wording</strong>
-          </div>
+          <div class="panel-head"><strong>Original clinical wording</strong></div>
           <div class="panel-body">
             <div id="recordOriginal" class="note"></div>
             <div class="actions">
-              <button class="primary" onclick="simplifyCurrent()">✦ Simplify it for me</button>
+              <button id="simplifyButton" class="primary" onclick="simplifyCurrent()">✦ Simplify it for me</button>
               <button class="secondary" onclick="showPage('diagnoses')">Back to diagnoses</button>
             </div>
+            <div id="apiStatus" class="api-status"></div>
           </div>
         </div>
 
         <div class="panel">
-          <div class="panel-head">
-            <strong>Patient-friendly explanation</strong>
-          </div>
+          <div class="panel-head"><strong>Patient-friendly explanation</strong></div>
           <div class="panel-body">
-            <div id="recordSimplified" class="plain" style="color:#82949A">Click “Simplify it for me” to create a plain-language version.</div>
+            <div id="recordSimplified" class="plain" style="color:#82949A">
+              Click “Simplify it for me” to create a plain-language version.
+            </div>
             <div id="recordTerms"></div>
           </div>
         </div>
@@ -709,6 +643,7 @@ const records = {
     breadcrumb:"Diagnoses › Schwannoma",
     title:"Schwannoma · pathology report",
     subtitle:"Pathology example from the ClarifAI proof of concept.",
+    record_type:"pathology",
     original:"Specimen: multiple nodular masses from L masseteric region. Histology: encapsulated benign tumor, spindle cell pattern consistent w/ schwannoma. Conclusion: benign peripheral nerve sheath tumor.",
     simplified:"The tissue samples from the left cheek/jaw area showed a non-cancerous tumor called a schwannoma. The tumor was well contained and had the typical appearance of a schwannoma.",
     terms:[
@@ -721,6 +656,7 @@ const records = {
     breadcrumb:"Diagnoses › Headache assessment",
     title:"Headache assessment",
     subtitle:"Outpatient assessment example.",
+    record_type:"clinical_note",
     original:"Assessment: likely tension-type HA vs early neuropathic pain. Plan: trial NSAIDs, monitor progression.",
     simplified:"The headaches were thought to be most consistent with tension headaches, although early irritation or pain involving a nerve was also considered. She was advised to try over-the-counter anti-inflammatory pain medication and monitor whether the headaches changed or worsened.",
     terms:[
@@ -733,6 +669,7 @@ const records = {
     breadcrumb:"Diagnoses › Hypertension",
     title:"Hypertension follow-up",
     subtitle:"Additional fictional demo record.",
+    record_type:"clinical_note",
     original:"Assessment: essential HTN, currently stable. Continue current antihypertensive regimen. Home BP monitoring advised; review in 3 mo.",
     simplified:"The clinician recorded high blood pressure that is currently stable. The plan is to continue the current blood-pressure medication, keep checking blood pressure at home, and have another review in three months.",
     terms:[
@@ -762,27 +699,144 @@ function showPage(page){
 
 function openRecord(key){
   currentRecord = records[key];
+
   document.getElementById("recordBreadcrumb").textContent=currentRecord.breadcrumb;
   document.getElementById("recordTitle").textContent=currentRecord.title;
   document.getElementById("recordSubtitle").textContent=currentRecord.subtitle;
   document.getElementById("recordOriginal").textContent=currentRecord.original;
-  document.getElementById("recordSimplified").textContent="Click “Simplify it for me” to create a plain-language version.";
+
+  document.getElementById("recordSimplified").textContent=
+    "Click “Simplify it for me” to create a plain-language version.";
+
   document.getElementById("recordSimplified").style.color="#82949A";
   document.getElementById("recordTerms").innerHTML="";
+  hideStatus();
   showPage("record");
 }
 
-function simplifyCurrent(){
+async function simplifyCurrent(){
   if(!currentRecord) return;
+
+  const button = document.getElementById("simplifyButton");
+  button.disabled = true;
+  button.textContent = "Simplifying...";
+
+  try{
+    const apiBase = (window.CLARIFAI_API_BASE || "").replace(/\/$/,"");
+
+    if(!apiBase){
+      renderStaticDemo();
+      showStatus("Static demo mode: using the predefined proof-of-concept simplification.", "ok");
+      return;
+    }
+
+    const response = await fetch(apiBase + "/api/simplify", {
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({
+        text:currentRecord.original,
+        record_type:currentRecord.record_type
+      })
+    });
+
+    if(!response.ok){
+      const body = await response.text();
+      throw new Error(body || "Backend returned an error.");
+    }
+
+    const result = await response.json();
+    renderApiResult(result);
+    showStatus("Simplification returned by the configured backend.", "ok");
+
+  }catch(error){
+    console.error(error);
+    renderStaticDemo();
+    showStatus("Backend unavailable. Showing the built-in demo result instead.", "error");
+  }finally{
+    button.disabled = false;
+    button.textContent = "✦ Simplify it for me";
+  }
+}
+
+function renderStaticDemo(){
   const out=document.getElementById("recordSimplified");
   out.textContent=currentRecord.simplified;
   out.style.color="#2E4147";
+
   let html='<div class="term-box"><div class="term-title">Medical terms made clearer</div>';
+
   currentRecord.terms.forEach(([a,b])=>{
-    html+='<div class="term"><b>'+a+'</b> → '+b+'</div>';
+    html+='<div class="term"><b>'+escapeHtml(a)+'</b> → '+escapeHtml(b)+'</div>';
   });
+
   html+='</div>';
   document.getElementById("recordTerms").innerHTML=html;
+}
+
+function renderApiResult(result){
+  const out=document.getElementById("recordSimplified");
+  out.textContent=result.plain_language_summary || "No simplified text returned.";
+  out.style.color="#2E4147";
+
+  let html="";
+
+  if(Array.isArray(result.medical_terms) && result.medical_terms.length){
+    html+='<div class="term-box"><div class="term-title">Medical terms made clearer</div>';
+
+    result.medical_terms.forEach(item=>{
+      html+='<div class="term"><b>'+escapeHtml(item.term)+'</b> → '+escapeHtml(item.meaning)+'</div>';
+    });
+
+    html+='</div>';
+  }
+
+  if(result.medication){
+    const med=result.medication;
+    html+='<div class="term-box"><div class="term-title">Prescription explained</div>';
+    html+='<div class="term"><b>Medication</b> → '+safe(med.name)+'</div>';
+    html+='<div class="term"><b>Strength</b> → '+safe(med.strength)+'</div>';
+    html+='<div class="term"><b>Dose</b> → '+safe(med.dose)+'</div>';
+    html+='<div class="term"><b>Frequency</b> → '+safe(med.frequency)+'</div>';
+    html+='<div class="term"><b>Timing</b> → '+safe(med.timing)+'</div>';
+    html+='<div class="term"><b>Route</b> → '+safe(med.route)+'</div>';
+    html+='<div class="term"><b>Duration</b> → '+safe(med.duration)+'</div>';
+    html+='<div class="term"><b>Plain language</b> → '+safe(med.plain_language_instruction)+'</div>';
+    html+='</div>';
+  }
+
+  if(result.needs_clinician_review){
+    html+='<div class="term-box"><div class="term-title">Review flag</div><div class="term">This simplification may require clinician review.</div></div>';
+  }
+
+  document.getElementById("recordTerms").innerHTML=html;
+}
+
+function showStatus(message,type){
+  const el=document.getElementById("apiStatus");
+  el.textContent=message;
+  el.className="api-status show "+type;
+}
+
+function hideStatus(){
+  const el=document.getElementById("apiStatus");
+  el.textContent="";
+  el.className="api-status";
+}
+
+function escapeHtml(value){
+  return String(value ?? "")
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+
+function safe(value){
+  if(value === null || value === undefined || value === ""){
+    return "Not specified";
+  }
+  return escapeHtml(value);
 }
 </script>
 </body>
